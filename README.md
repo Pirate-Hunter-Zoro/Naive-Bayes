@@ -1,4 +1,4 @@
-# CS 5333/7333 Machine Learning - Project 2: Naïve Bayes
+# Naïve Bayes
 
 ## Project Overview
 
