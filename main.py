@@ -44,26 +44,27 @@ def run_tests(model_name: NBModelName):
     """
     X, y = load_spam_ham_data(emails_path)
     accuracy, confusion_matrix = run_analysis(X, y, make_model(model_name))
-    results_mn_spam_ham = f"""{model_name} on Spam/Ham Data Set:
+    results_mn_spam_ham = f"""{model_name.value} on Spam/Ham Data Set:
     Mean Accuracy: 
         {accuracy}, 
     Confusion Matrix: 
-    {create_confusion_matrix_str(confusion_matrix)}
+      {create_confusion_matrix_str(confusion_matrix)}
     """
     
     # News groups
     X, y = load_news_groups_data()
     accuracy, confusion_matrix = run_analysis(X, y, make_model(model_name))
-    results_news_groups = f"""{model_name} on News Group Data Set:
+    results_news_groups = f"""{model_name.value} on News Group Data Set:
     Mean Accuracy:
         {accuracy},
     Confusion Matrix:
-        {create_confusion_matrix_str(confusion_matrix)}
+      {create_confusion_matrix_str(confusion_matrix)}
     """
     
     os.makedirs("results", exist_ok=True)
-    with open(Path("results/performance.txt"), 'w') as f:
+    with open(Path(f"results/{model_name.value} Performance.txt"), 'w') as f:
         f.write(results_mn_spam_ham)
+        f.write("\n\n")
         f.write(results_news_groups)
 
 if __name__=="__main__":
