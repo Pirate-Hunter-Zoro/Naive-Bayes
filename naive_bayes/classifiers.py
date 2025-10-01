@@ -3,6 +3,7 @@ Four Naïve Bayes algorithm variants as separate classes
 """
 import numpy as np
 from abc import ABC, abstractmethod
+from enum import Enum
 
 class BaseNBClassifier(ABC):
     @abstractmethod
@@ -12,6 +13,10 @@ class BaseNBClassifier(ABC):
     @abstractmethod
     def predict(self, X, y):
         pass
+
+
+class NBModelName(Enum):
+    MULTINOMIAL = "Multinomial Naive Bayes"
 
 class MultinomialNB(BaseNBClassifier):
     
@@ -33,11 +38,13 @@ class MultinomialNB(BaseNBClassifier):
             X (list[str]): List of input observations (e.g. emails)
             y (list[int]): List of corresponding classifications
         """
+        print("Fitting MultinomialNB model...")
         # First calculate p(y=l) for each class
         y = np.array(y, dtype=int)
         X = np.array(X, dtype=str)
         self.classes = np.unique(y)
         self.priors = {}
+        print("     - Computing prior probabilities for each class...")
         for c in self.classes:
             # Compute log probability
             self.priors[c] = np.log(np.sum(y==c)/len(y))
@@ -46,7 +53,8 @@ class MultinomialNB(BaseNBClassifier):
         word_counts_per_class = {} # {class -> {word -> int}}
         total_words_per_class = {}
         vocabulary = set()
-        for c in self.classes:
+        print("     - Calculating word counts...")
+        for i, c in enumerate(self.classes):
             word_counts_per_class[c] = {}
             total_words_per_class[c] = 0
             relevant_inputs = X[np.where(y==c)]
@@ -59,6 +67,9 @@ class MultinomialNB(BaseNBClassifier):
                         word_counts_per_class[c][word]=1
                     else:
                         word_counts_per_class[c][word]+=1
+            print(f"        - Calculated word counts for {i+1} classes out of {len(self.classes)}")
+                        
+        # Make sure all classes that didn't have certain words have a zero count for said words
         for word in vocabulary:
             for c in self.classes:
                 if word not in word_counts_per_class[c].keys():
@@ -67,6 +78,7 @@ class MultinomialNB(BaseNBClassifier):
         self.vocabulary = vocabulary
         vocab_size = len(self.vocabulary)
         self.conditionals = {}
+        print(f"    - Calculating final conditional probabilities...")
         for c in self.classes:
             self.conditionals[c] = {}
             # For this class, we want the probability of each word
@@ -77,6 +89,7 @@ class MultinomialNB(BaseNBClassifier):
                 numerator = word_counts_per_class[c][word] + self.k
                 prob = numerator / denominator
                 self.conditionals[c][word]=np.log(prob)
+        print("...Fit complete")
     
     def predict(self, X:list[str]) -> list[int]:
         """Predict classes of given inputs
@@ -87,8 +100,9 @@ class MultinomialNB(BaseNBClassifier):
         Returns:
             list[int]: Predicted Outputs
         """
+        print(f"Predicting {len(X)} documents")
         predictions = []
-        for x in X:
+        for i,x in enumerate(X):
             # Herein lies the Naive Bayes assumption - calculating the maximum probability label
             record_sum = float('-inf')
             record_class = None
@@ -102,4 +116,6 @@ class MultinomialNB(BaseNBClassifier):
                     record_sum = prob_sum
                     record_class = c
             predictions.append(record_class)
+            if (i+1) % 500 == 0:
+                print(f"    - Predicting document {i+1} of {len(X)}...")
         return predictions
