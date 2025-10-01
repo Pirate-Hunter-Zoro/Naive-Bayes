@@ -118,6 +118,8 @@ class MultinomialNB(BaseNBClassifier):
                 if prob_sum > record_sum:
                     record_sum = prob_sum
                     record_class = c
+            if i % (len(X)//10) == 0:
+                print(f"    - {int(100 * i/len(X))}% finished with predictions...")
             predictions.append(record_class)
         return predictions
     
@@ -219,7 +221,7 @@ class BernoulliNB(BaseNBClassifier):
                 if score > record_score:
                     record_score = score
                     record_class = c
-            if int(100 * i/len(X)) % 10 == 0:
+            if i % (len(X)//10) == 0:
                 print(f"    - {int(100 * i/len(X))}% finished with predictions...")
             predictions.append(record_class)
         return predictions
