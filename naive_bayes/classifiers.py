@@ -202,7 +202,7 @@ class BernoulliNB(BaseNBClassifier):
         """
         print(f"Predicting {len(X)} documents")
         predictions = []
-        for doc in X:
+        for i, doc in enumerate(X):
             doc_words = set(doc.split(" "))
             record_score = float('-inf')
             record_class = None
@@ -219,5 +219,7 @@ class BernoulliNB(BaseNBClassifier):
                 if score > record_score:
                     record_score = score
                     record_class = c
+            if int(100 * i/len(X)) % 10 == 0:
+                print(f"    - {int(100 * i/len(X))}% finished with predictions...")
             predictions.append(record_class)
         return predictions
