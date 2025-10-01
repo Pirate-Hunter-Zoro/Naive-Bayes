@@ -23,7 +23,8 @@ def make_model(model_name: NBModelName) -> BaseNBClassifier:
     """
     if model_name == NBModelName.MULTINOMIAL:
         return MultinomialNB()
-    pass
+    elif model_name == NBModelName.BERNOULLI:
+        return BernoulliNB()
 
 def create_confusion_matrix_str(confusion_matrix: np.array) -> str:
     """Print out confusion matrix in a visually appealing form
@@ -68,5 +69,5 @@ def run_tests(model_name: NBModelName):
         f.write(results_news_groups)
 
 if __name__=="__main__":
-    model_name = NBModelName.MULTINOMIAL
-    run_tests(model_name)
+    run_tests(NBModelName.MULTINOMIAL)
+    run_tests(NBModelName.BERNOULLI)
