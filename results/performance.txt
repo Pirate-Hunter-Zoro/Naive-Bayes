@@ -1,0 +1,5 @@
+Multinomial Naive Bayes on Spam/Ham Data Set:
+    Mean Accuracy: 0.9874296775570238, 
+    Confusion Matrix: [4319 41]
+                      [31 1337]
+    

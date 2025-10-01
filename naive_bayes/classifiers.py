@@ -2,8 +2,18 @@
 Four Naïve Bayes algorithm variants as separate classes
 """
 import numpy as np
+from abc import ABC, abstractmethod
 
-class MultinomialNB:
+class BaseNBClassifier(ABC):
+    @abstractmethod
+    def fit(self, X, y):
+        pass
+    
+    @abstractmethod
+    def predict(self, X, y):
+        pass
+
+class MultinomialNB(BaseNBClassifier):
     
     def __init__(self, k:float=1.0):
         """Initialize multinomial Naive Bayes model with its smoothing parameter
@@ -77,4 +87,19 @@ class MultinomialNB:
         Returns:
             list[int]: Predicted Outputs
         """
-        pass
+        predictions = []
+        for x in X:
+            # Herein lies the Naive Bayes assumption - calculating the maximum probability label
+            record_sum = float('-inf')
+            record_class = None
+            words = x.split()
+            for c in self.classes:
+                prob_sum = self.priors[c]
+                for word in words:
+                    if word in self.vocabulary:
+                        prob_sum += self.conditionals[c][word]
+                if prob_sum > record_sum:
+                    record_sum = prob_sum
+                    record_class = c
+            predictions.append(record_class)
+        return predictions
