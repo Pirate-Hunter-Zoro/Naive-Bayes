@@ -225,3 +225,46 @@ class BernoulliNB(BaseNBClassifier):
                 print(f"    - {int(100 * i/len(X))}% finished with predictions...")
             predictions.append(record_class)
         return predictions
+    
+    
+class GaussianNB(BaseNBClassifier):
+    
+    def __init__(self):
+        pass
+    
+    def fit(self, X:list[list[float]], y:list[int]):
+        """Fit the model according to the given input data and labels
+
+        Args:
+            X (list[list[float]]): Input data
+            y (list[int]): corresponding labels
+        """
+        X = np.array(X, dtype=float)
+        y = np.array(y, dtype=int)
+        self.classes = np.unique(y)
+        self.priors = {}
+        print("     - Computing prior probabilities for each class...")
+        for c in self.classes:
+            # Compute log probability
+            self.priors[c] = np.log(np.sum(y==c)/len(y))
+            
+        # We need means and variances for each feature for each class
+        self.means = {}
+        self.variances = {}
+        for c in self.classes:
+            X_subset = X[y==c]
+            means = np.mean(X_subset, axis=0) # Mean across all rows - so the mean of a column - giving the mean value of an attribute over all observations
+            self.means[c] = means
+            variances = np.var(X_subset, axis=0)
+            self.variances[c] = variances # Same except for variance
+    
+    def predict(self, X:list[list[float]]) -> list[int]:
+        """Generate model predictions for each given class
+
+        Args:
+            X (list[list[float]]): Input data
+
+        Returns:
+            list[int]: output predictions
+        """
+        pass
