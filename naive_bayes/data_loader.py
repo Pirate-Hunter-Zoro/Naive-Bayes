@@ -2,7 +2,7 @@
 Functions responsible for loading and preprocessing each of the four datasets 
 """
 import pandas as pd
-from sklearn.datasets import fetch_20newsgroups
+from sklearn.datasets import fetch_20newsgroups, load_digits
 import re
 
 stop_words = set([
@@ -66,4 +66,30 @@ def load_news_groups_data() -> tuple[list[str], list[int]]:
     for article in raw_text_data:
         # Remove all punctuation, capitalization, useless 'stop' words, etc.
         filtered_data.append(_preprocess_text(article))
-    return(filtered_data, newsgroups_data.target)
+    return (filtered_data, newsgroups_data.target)
+
+def load_handwritten_digits() -> tuple[list[list[float]], list[int]]:
+    """Load the handwritten digits dataset from sklearn
+
+    Returns:
+        tuple[list[list[float]], list[int]]: Image pixel arrays along with their classifications
+    """
+    data = load_digits()
+    return (data.data, data.target)
+
+def load_titanic_data(file_path: str) -> tuple[list[tuple[list[str],list[float]]], list[int]]:
+    """Load the titanic dataset which has both numeric and categorical variables
+
+    Args:
+        file_path (str): path to the titanic data
+
+    Returns:
+        tuple[list[tuple[list[str],list[float]]], list[int]]: Observations paired with classifications
+    """
+    df = pd.read_csv(file_path)
+    df.drop(labes=['PassengerId', 'Name', 'Ticket', 'Cabin'])
+    attribute_modes = df.mode(axis=1)
+    df.fillna('Embarked', attribute_modes['Embarked'])
+    
+    
+    

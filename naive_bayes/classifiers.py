@@ -1,6 +1,7 @@
 """
 Four Naïve Bayes algorithm variants as separate classes
 """
+import math
 import numpy as np
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -20,6 +21,8 @@ class NBModelName(Enum):
     
     MULTINOMIAL = "Multinomial Naive Bayes"
     BERNOULLI = "Bernoulli Naive Bayes"
+    GAUSSIAN = "Gaussian Naive Bayes"
+    CATEGORICAL = "Categorical Naive Bayes"
 
 
 class MultinomialNB(BaseNBClassifier):
@@ -256,6 +259,7 @@ class GaussianNB(BaseNBClassifier):
             means = np.mean(X_subset, axis=0) # Mean across all rows - so the mean of a column - giving the mean value of an attribute over all observations
             self.means[c] = means
             variances = np.var(X_subset, axis=0)
+            variances += 1e-10*np.ones(variances.shape) # Avoid division by zero in case a pixel is always empty for instance
             self.variances[c] = variances # Same except for variance
     
     def predict(self, X:list[list[float]]) -> list[int]:
@@ -266,5 +270,50 @@ class GaussianNB(BaseNBClassifier):
 
         Returns:
             list[int]: output predictions
+        """
+        X = np.array(X, dtype=float)
+        predictions = []
+        for x in X:
+            record_class_score = float('-inf')
+            record_class = None
+            for c in self.classes:
+                # Formula for a single feature's log propbability given a class's mean and variance of said feature is -(x_i-mu_i)^2/(2sigma_i^2)-1/2log(2pi*sigma_i^2)
+                score = self.priors[c] - np.sum((x-self.means[c])**2/(2*self.variances[c]))-1/2*np.sum(np.log(2*math.pi*self.variances[c]))
+                if score > record_class_score:
+                    record_class_score = score
+                    record_class = c
+            predictions.append(record_class)
+        return predictions
+    
+    
+class CategoricalNB(BaseNBClassifier):
+    
+    def __init__(self, k:float=1.0):
+        """Initialize CategoricalNB classifier
+
+        Args:
+            k (float, optional): Laplace smoothing factor. Defaults to 1.0.
+        """
+        self.MNClassifier = MultinomialNB(k=k)
+        self.GaussianClassifier = GaussianNB()
+        
+    def fit(self, X: list[tuple[list[str],list[float]]], y: list[int]):
+        """Fit the model according to the input data
+
+        Args:
+            X (list[list[any]]): List of numeric, categorical, and MISSING types per observation
+            y (list[int]): List of classifications for each observation
+        """
+        pass
+                    
+    
+    def predict(self, X: list[tuple[list[str],list[float]]]) -> list[int]:
+        """Prediction method to predict classes for given inputs
+
+        Args:
+            X (list[list[any]]): List of numeric, categorical, or missing types per observation
+
+        Returns:
+            list[int]: Predicted classes for each observation
         """
         pass
