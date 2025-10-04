@@ -77,19 +77,37 @@ def load_handwritten_digits() -> tuple[list[list[float]], list[int]]:
     data = load_digits()
     return (data.data, data.target)
 
-def load_titanic_data(file_path: str) -> tuple[list[tuple[list[str],list[float]]], list[int]]:
+def load_titanic_data(file_path: str) -> tuple[tuple[list[list[int]],list[list[float]]],list[int]]:
     """Load the titanic dataset which has both numeric and categorical variables
 
     Args:
         file_path (str): path to the titanic data
 
     Returns:
-        tuple[list[tuple[list[str],list[float]]], list[int]]: Observations paired with classifications
+        tuple[list[list[int]],list[list[float]],list[int]]: Categorical attributes, numeric attributes, classifications
     """
     df = pd.read_csv(file_path)
-    df.drop(labes=['PassengerId', 'Name', 'Ticket', 'Cabin'])
-    attribute_modes = df.mode(axis=1)
-    df.fillna('Embarked', attribute_modes['Embarked'])
+    df = df.drop(labels=['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
     
+    # Handle missing embarking values
+    embarked_mode = df['Embarked'].mode()[0]
+    df['Embarked'] = df['Embarked'].fillna(embarked_mode)
     
+    # Handle missing age values
+    median_age = df['Age'].median()
+    df['Age'] = df['Age'].fillna(median_age)
     
+    # Convert sex and embark categories to 0/1 binary values
+    df['Sex'] = df['Sex'].replace({'male':0, 'female':1})
+    df['Embarked'] = df['Embarked'].replace({'S':0, 'C':1, 'Q':2})
+    
+    # Split up the data
+    categorical_cols = ['Pclass', 'Sex', 'Embarked']
+    numeric_cols = ['Age', 'SibSp', 'Parch', 'Fare']
+    
+    X_categorical = df[categorical_cols].to_numpy().tolist()
+    X_numeric = df[numeric_cols].to_numpy().tolist()
+    X = [(first, second) for first, second in zip(X_categorical,X_numeric)]
+    y = df['Survived'].tolist()
+    
+    return (X, y)

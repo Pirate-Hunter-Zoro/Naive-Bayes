@@ -4,18 +4,17 @@ Code for running the 5-fold cross-validation, training the models, generating pr
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
-from .classifiers import BaseNBClassifier
+from .classifiers.base import BaseNBClassifier
 
-def run_analysis(X: list[str], y: list[int], classifier: BaseNBClassifier) -> tuple[float, np.ndarray]:
+def run_analysis(X: list[any], y: list[int], classifier: BaseNBClassifier) -> tuple[float, np.ndarray]:
     kfolder = KFold(n_splits=5, shuffle=True, random_state=42)
     accuracies = []
     confusion_matrices = []
-    X = np.array(X, dtype=str)
     y = np.array(y, dtype=int)
     for (train_indices, test_indices) in kfolder.split(X):
-        X_train = X[train_indices]
+        X_train = [X[i] for i in train_indices]
         y_train = y[train_indices]
-        X_test = X[test_indices]
+        X_test = [X[i] for i in test_indices]
         y_test = y[test_indices]
         # Fit the classifier on the training set
         classifier.fit(X_train, y_train)

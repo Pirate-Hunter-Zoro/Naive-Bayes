@@ -5,9 +5,16 @@ A simple script to execute the entire analysis for each part of the project.
 
 from naive_bayes.data_loader import *
 from naive_bayes.analysis import run_analysis
-from naive_bayes.classifiers import *
+from naive_bayes.classifiers.base import NBModelName, BaseNBClassifier
+from naive_bayes.classifiers.gaussian import GaussianNB
+from naive_bayes.classifiers.bernoulli import BernoulliNB
+from naive_bayes.classifiers.multinomial import MultinomialNB
+from naive_bayes.classifiers.titanic import TitanicNB
 import os
 from pathlib import Path
+import numpy as np
+from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 emails_path = "data/emails.csv"
 titanic_path = "data/Titanic-Dataset.csv"
@@ -28,9 +35,9 @@ def make_model(model_name: NBModelName) -> BaseNBClassifier:
     elif model_name == NBModelName.GAUSSIAN:
         return GaussianNB()
     else:
-        if not model_name == NBModelName.CATEGORICAL:
+        if not model_name == NBModelName.TITANIC: # We never directly use the categorical naive bayes classifier - that only goes within the Titanic Classifier
             raise ValueError(f"Invalid model name specified: {model_name}")
-        return CategoricalNB()
+        return TitanicNB()
 
 def create_confusion_matrix_str(confusion_matrix: np.array) -> str:
     """Print out confusion matrix in a visually appealing form
@@ -90,10 +97,26 @@ def run_tests(model_name: NBModelName):
         with open(Path(f"results/{model_name.value} Performance.txt"), 'w') as f:
             f.write(results_handwritten_digits)
             
+    
+    elif model_name==NBModelName.TITANIC:
+        X, y = load_titanic_data(titanic_path)
+        accuracy, confusion_matrix = run_analysis(X, y, make_model(model_name))
+        results_titanic = f"""{model_name.value} on Titanic Data Set:
+        Mean Accuracy: 
+            {accuracy}, 
+        Confusion Matrix: 
+            {create_confusion_matrix_str(confusion_matrix)}
+        """
+        
+        os.makedirs("results", exist_ok=True)
+        with open(Path(f"results/{model_name.value} Performance.txt"), 'w') as f:
+            f.write(results_titanic)
+            
             
             
 
 if __name__=="__main__":
-    # run_tests(NBModelName.MULTINOMIAL)
-    # run_tests(NBModelName.BERNOULLI)
+    run_tests(NBModelName.MULTINOMIAL)
+    run_tests(NBModelName.BERNOULLI)
     run_tests(NBModelName.GAUSSIAN)
+    run_tests(NBModelName.TITANIC)

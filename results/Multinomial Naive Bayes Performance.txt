@@ -1,16 +1,16 @@
 Multinomial Naive Bayes on Spam/Ham Data Set:
-    Mean Accuracy: 
-        0.9874296775570238, 
-    Confusion Matrix: 
-      [4319 41]
+        Mean Accuracy: 
+            0.9874296775570238, 
+        Confusion Matrix: 
+        [4319 41]
       [31 1337]
-    
+        
 
 Multinomial Naive Bayes on News Group Data Set:
-    Mean Accuracy:
-        0.6392872751533697,
-    Confusion Matrix:
-      [237 5 0 0 0 2 0 4 13 1 6 20 0 7 9 336 12 88 52 7]
+        Mean Accuracy:
+            0.6392872751533697,
+        Confusion Matrix:
+        [237 5 0 0 0 2 0 4 13 1 6 20 0 7 9 336 12 88 52 7]
       [2 698 9 33 9 82 3 1 10 3 2 43 2 4 14 26 2 16 13 1]
       [2 138 342 101 13 225 3 0 15 0 9 57 3 3 7 35 2 10 19 1]
       [1 66 40 655 43 44 12 1 5 0 8 51 19 3 3 13 1 8 9 0]
@@ -30,4 +30,4 @@ Multinomial Naive Bayes on News Group Data Set:
       [1 2 0 1 0 2 0 1 14 2 6 18 2 6 1 55 4 789 36 0]
       [4 3 0 0 0 1 0 1 10 2 5 22 0 15 7 55 57 104 489 0]
       [36 6 0 1 0 3 1 1 8 1 9 12 0 13 9 347 41 57 44 39]
-    
+        
